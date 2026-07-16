@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Volta — Reconexão</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0D0D1A;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#E0E0E0;display:flex;justify-content:center;min-height:100vh}
+.phone{width:375px;height:812px;background:#1A1A2E;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,0.6);border:3px solid #2A2A3E;display:flex;flex-direction:column;margin:20px auto}
+.tela{flex:1;padding:24px 20px 90px;display:none;flex-direction:column;overflow-y:auto;position:relative}
+.tela.ativa{display:flex}
+.tela::-webkit-scrollbar{width:0}
+h2{font-family:Georgia,serif;font-size:22px;color:#FFF;margin-bottom:4px}
+.sub{color:#999;font-size:13px;margin-bottom:16px;line-height:1.5}
+.btn{background:#E85D3A;color:#FFF;border:none;padding:14px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;width:100%;transition:.2s}
+.btn:active{transform:scale(.98)}
+.btn2{background:transparent;border:2px solid #E85D3A;color:#E85D3A}
+.card{background:#2A2A3E;border-radius:14px;padding:16px;margin-bottom:10px}
+.dim{color:#888;font-size:13px}
+.volta{color:#888;font-size:14px;cursor:pointer;margin-bottom:12px;display:inline-block}
+.volta:hover{color:#E85D3A}
+.accent{color:#E85D3A}
+.topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.logo{font-size:26px;color:#E85D3A;font-weight:700;font-family:Georgia,serif}
+.lvl{font-size:12px;color:#999;background:#2A2A3E;padding:4px 12px;border-radius:16px}
+.area-prog{margin-bottom:12px}
+.area-prog .rotulo{font-size:14px;margin-bottom:6px}
+.area-prog .rotulo strong{color:#E85D3A}
+.barra{height:8px;background:#121225;border-radius:4px;overflow:hidden}
+.barra-preench{height:100%;background:#E85D3A;border-radius:4px;transition:.6s}
+.grid-pz{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.pz{aspect-ratio:1;background:#121225;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #3A3A4E;color:#555;font-size:10px;gap:2px;transition:.5s;padding:4px;text-align:center;line-height:1.3;position:relative}
+.pz .ico{font-size:20px}
+.pz.livre{border:2px solid #E85D3A;background:rgba(232,93,58,.08);color:#E85D3A;font-weight:600}
+.pz .dica{font-size:7px;color:#666;position:absolute;bottom:4px;left:0;right:0;padding:0 2px}
+.pz.livre .dica{display:none}
+.pz .nro{position:absolute;top:3px;left:5px;font-size:8px;color:#444;font-weight:700}
+.card-missao{border-left:3px solid #E85D3A;margin-bottom:16px}
+.card-missao h3{font-size:15px;margin-bottom:4px;color:#FFF}
+.grid-mod{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mod{background:#2A2A3E;border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;border:1px solid transparent;transition:.2s}
+.mod:hover{border-color:#E85D3A}
+.mod .ico{font-size:26px;margin-bottom:4px}
+.mod h4{color:#FFF;font-size:13px;margin-bottom:2px}
+.mod p{color:#888;font-size:10px}
+.card-mapa{background:#121225;border:1px solid #2A2A3E;border-radius:12px;padding:14px;margin-bottom:12px}
+.card-mapa .mp-tit{font-size:12px;color:#E85D3A;font-weight:700;margin-bottom:8px;letter-spacing:.5px}
+.card-mapa .mp-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;color:#AAA;border-bottom:1px solid #1A1A2E}
+.card-mapa .mp-item:last-child{border-bottom:none}
+.card-mapa .mp-item .mp-ico{font-size:16px;width:20px;text-align:center}
+.card-mapa .mp-item .mp-fonte{color:#E85D3A;font-weight:600;font-size:10px;margin-left:auto;flex-shrink:0}
+.sc-card{display:flex;align-items:center;gap:12px;background:#2A2A3E;border-radius:12px;padding:14px;cursor:pointer;transition:.25s;margin-bottom:8px;border:1px solid transparent}
+.sc-card:hover{border-color:#E85D3A;transform:translateX(4px)}
+.sc-card .e{font-size:22px;flex-shrink:0}
+.sc-card .t{flex:1;font-size:14px;color:#CCC}
+.sc-card .barra-freq{display:flex;gap:2px;flex-shrink:0;margin-left:8px}
+.sc-card .barra-freq span{width:6px;height:14px;border-radius:2px;background:#3A3A4E;transition:.3s}
+.sc-card .barra-freq span.cheia{background:#E85D3A}
+#res-frame{display:none;margin-top:12px}
+.box-frame{border:1px solid #E85D3A;background:#2D2D4A;border-radius:14px;padding:18px;margin-bottom:12px}
+.box-frame .qt{font-size:16px;line-height:1.7;font-style:italic;color:#FFF;font-family:Georgia,serif;margin:10px 0}
+.camada{padding:10px 14px;border-radius:8px;margin-bottom:6px;border-left:3px solid;background:#2A2A3E}
+.camada .tl{font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:2px}
+.camada .tb{color:#AAA;font-size:13px;line-height:1.4}
+.c1{border-color:#888}.c1 .tl{color:#888}
+.c2{border-color:#E8A83A}.c2 .tl{color:#E8A83A}
+.c3{border-color:#E85D3A}.c3 .tl{color:#E85D3A}
+.item-inv{display:flex;align-items:center;gap:12px;background:#2A2A3E;border-radius:12px;padding:12px;margin-bottom:7px}
+.item-inv .st{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:rgba(76,175,80,.2)}
+.item-inv .inf{flex:1}
+.item-inv .inf .nm{color:#FFF;font-size:14px;margin-bottom:2px;display:block}
+.item-inv .inf .tg{font-size:10px;font-weight:600;color:#4CAF50}
+.item-inv .dt{font-size:10px;color:#666;flex-shrink:0}
+.vazio{text-align:center;padding:40px 20px;color:#666}
+.vazio .ico{font-size:40px;display:block;margin-bottom:12px}
+#ob{position:fixed;top:0;left:0;width:100%;height:100%;background:#1A1A2E;z-index:1000;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px}
+.passo{display:none;width:100%;max-width:320px;text-align:center}
+.passo.ativo{display:block}
+.passo .ico{font-size:64px;margin-bottom:24px;display:block}
+.passo .txt{font-size:20px;line-height:1.5;margin-bottom:32px;font-family:Georgia,serif;color:#FFF}
+.passo input{width:100%;background:#2A2A3E;border:1px solid #3A3A4E;padding:14px;border-radius:10px;color:#FFF;font-size:18px;text-align:center;margin-bottom:20px}
+.passo input::placeholder{color:#555}
+.bolinhas{display:flex;justify-content:center;gap:8px;margin:24px 0}
+.bolinha{width:8px;height:8px;border-radius:50%;background:#333;transition:.3s}
+.bolinha.cheia{width:28px;border-radius:4px;background:#E85D3A}
+nav{display:none;height:66px;background:#121225;border-top:1px solid #2A2A3E;justify-content:space-around;align-items:center;flex-shrink:0;position:absolute;bottom:0;left:0;right:0;z-index:100}
+nav a{display:flex;flex-direction:column;align-items:center;color:#666;font-size:10px;cursor:pointer;gap:2px;padding:4px 8px;text-decoration:none;transition:.3s}
+nav a.on{color:#E85D3A}
+nav a .ico{font-size:22px}
+.grid-j{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.j-card{background:#2A2A3E;border-radius:12px;padding:18px 12px;text-align:center;cursor:pointer;transition:.2s}
+.j-card .ico{font-size:32px;margin-bottom:4px}
+.j-card h4{color:#FFF;font-size:13px;margin-bottom:2px}
+.j-card p{color:#888;font-size:10px}
+#modal-j{position:fixed;top:0;left:0;width:100%;height:100%;background:#1A1A2E;z-index:1100;padding:30px;display:none;flex-direction:column;overflow-y:auto}
+#modal-j .volta{color:#888;font-size:14px;cursor:pointer;margin-bottom:20px;display:inline-block}
+#dip-trancado{text-align:center;padding:40px 20px}
+#dip-trancado .g{font-size:48px;margin-bottom:20px;display:block}
+#dip-trancado p{color:#999;font-size:15px;line-height:1.6}
+#dip-livre{display:none}
+.dip-box{background:#fdfcf0;color:#2c3e50;padding:28px;border:12px double #d4af37;text-align:center;margin-top:10px}
+.dip-box h3{font-size:22px;color:#b8860b;margin-bottom:16px;font-family:Georgia,serif}
+.dip-box .nm{font-size:26px;border-bottom:1px solid #ddd;display:inline-block;padding:0 16px 4px;margin:10px 0;font-family:Georgia,serif;color:#1a1a2e}
+.dip-box .msg{font-size:14px;font-style:italic;margin:16px 0;line-height:1.6;color:#555}
+.dip-box .lista{text-align:left;font-size:12px;display:inline-block;margin:12px 0;color:#444}
+.dip-box .lista div{padding:3px 0}
+.dip-box .data{font-size:10px;color:#999;margin-top:12px}
+.dip-box .selo{font-size:36px;color:#E85D3A;margin-top:8px;display:block}
+.gg{margin-bottom:16px}
+.gg label{display:block;font-size:12px;color:#999;margin-bottom:4px}
+.gg input{width:100%;background:#121225;border:1px solid #3A3A4E;padding:12px;border-radius:8px;color:#FFF;font-size:16px}
+.perigo{margin-top:40px;border-top:1px solid #2A2A3E;padding-top:20px}
+.btn-red{background:#c0392b}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<div id="ob">
+  <div class="passo ativo" id="p1">
+    <span class="ico">⟳</span>
+    <p class="txt">Você não está aqui para esquecer alguém. Está aqui para se lembrar de você.</p>
+    <div class="bolinhas"><div class="bolinha cheia"></div><div class="bolinha"></div><div class="bolinha"></div></div>
+    <button class="btn" onclick="irOb(2)">Próximo</button>
+  </div>
+  <div class="passo" id="p2">
+    <span class="ico">🧩</span>
+    <p class="txt">Cada parte sua que você recupera é uma peça que volta ao lugar.</p>
+    <div class="bolinhas"><div class="bolinha"></div><div class="bolinha cheia"></div><div class="bolinha"></div></div>
+    <button class="btn" onclick="irOb(3)">Próximo</button>
+  </div>
+  <div class="passo" id="p3">
+    <span class="ico">✨</span>
+    <p class="txt">Como podemos te chamar?</p>
+    <input id="nomeUser" placeholder="Seu nome">
+    <button class="btn" onclick="finalizarOb()">Começar Jornada</button>
+  </div>
+</div>
+
+<div class="tela ativa" id="home">
+  <div class="topo">
+    <div class="logo">⟳ Volta</div>
+    <div class="lvl" id="nivel">🌱 Nível 1 · Semente</div>
+  </div>
+  <div class="area-prog">
+    <div class="rotulo">Quebra-cabeça: <strong id="contPecas">0</strong> de 8</div>
+    <div class="barra"><div class="barra-preench" id="barraProg" style="width:0%"></div></div>
+  </div>
+  <div class="grid-pz" id="gradePz"></div>
+  <div class="card-mapa">
+    <div class="mp-tit">🗺️ COMO DESBLOQUEAR</div>
+    <div class="mp-item"><span class="mp-ico">🪞</span><span>Cada reframe no Espelho</span><span class="mp-fonte">1 peça</span></div>
+    <div class="mp-item"><span class="mp-ico">📖</span><span>Módulo Ressignificar</span><span class="mp-fonte">Peça 2</span></div>
+    <div class="mp-item"><span class="mp-ico">⚓</span><span>Módulo Ancorar</span><span class="mp-fonte">Peça 3</span></div>
+    <div class="mp-item"><span class="mp-ico">🧭</span><span>Módulo Protagonismo</span><span class="mp-fonte">Peça 5</span></div>
+    <div class="mp-item"><span class="mp-ico">🌱</span><span>Módulo Florescer</span><span class="mp-fonte">Peça 6</span></div>
+  </div>
+  <div class="card card-missao">
+    <h3>Missão do Dia</h3>
+    <p class="dim" style="margin-bottom:10px">Vá no Espelho e recupere mais uma parte sua.</p>
+    <button class="btn" style="padding:10px;font-size:14px" onclick="irTela('espelho')">Ir para o Espelho</button>
+  </div>
+  <div class="grid-mod">
+    <div class="mod" onclick="irTela('espelho')"><div class="ico">🪞</div><h4>Espelho</h4><p>Libera peças</p></div>
+    <div class="mod" onclick="irTela('inventario')"><div class="ico">📦</div><h4>Inventário</h4><p>Suas peças</p></div>
+    <div class="mod" onclick="irTela('jornada')"><div class="ico">🗺️</div><h4>Jornada</h4><p>Módulos</p></div>
+    <div class="mod" onclick="irTela('config')"><div class="ico">⚙️</div><h4>Config</h4><p>Ajustes</p></div>
+  </div>
+</div>
+
+<div class="tela" id="espelho">
+  <div class="volta" onclick="irTela('home')">← Voltar</div>
+  <h2>🪞 <span class="accent">Espelho</span></h2>
+  <p class="sub">Toque no que você sente. Cada reframe libera a próxima peça disponível.</p>
+  <div id="listaSc"></div>
+  <div id="res-frame">
+    <div class="box-frame">
+      <div style="font-size:24px;margin-bottom:4px">🪞</div>
+      <div style="color:#E85D3A;font-weight:700;margin-bottom:4px">A Verdade</div>
+      <div class="qt" id="rTexto"></div>
+    </div>
+    <div class="camada c1"><div class="tl">O FATO</div><div class="tb" id="rFato"></div></div>
+    <div class="camada c2"><div class="tl">A NECESSIDADE</div><div class="tb" id="rNec"></div></div>
+    <div class="camada c3"><div class="tl">O RECONHECIMENTO</div><div class="tb" id="rRec"></div></div>
+    <button class="btn btn2" onclick="recuperar()" style="margin-top:10px">✓ Recuperar esta parte</button>
+  </div>
+</div>
+
+<div class="tela" id="inventario">
+  <div class="volta" onclick="irTela('home')">← Voltar</div>
+  <h2>📦 <span class="accent">Inventário</span></h2>
+  <p class="sub">Todas as suas peças recuperadas.</p>
+  <div id="listaInv"></div>
+</div>
+
+<div class="tela" id="jornada">
+  <div class="volta" onclick="irTela('home')">← Voltar</div>
+  <h2>🗺️ <span class="accent">Jornada</span></h2>
+  <p class="sub">Cada módulo concluído libera uma peça específica.</p>
+  <div class="grid-j">
+    <div class="j-card" onclick="abrirJ(1)"><div class="ico">📖</div><h4>RESSIGNIFICAR</h4><p>Peça 2</p></div>
+    <div class="j-card" onclick="abrirJ(2)"><div class="ico">🧭</div><h4>PROTAGONISMO</h4><p>Peça 5</p></div>
+    <div class="j-card" onclick="abrirJ(3)"><div class="ico">🌱</div><h4>FLORESCER</h4><p>Peça 6</p></div>
+    <div class="j-card" onclick="abrirJ(4)"><div class="ico">⚓</div><h4>ANCORAR</h4><p>Peça 3</p></div>
+  </div>
+</div>
+
+<div id="modal-j"><div class="volta" onclick="fecharJ()">← Voltar</div><div id="jConteudo"></div></div>
+
+<div class="tela" id="diploma">
+  <div class="volta" onclick="irTela('home')">← Voltar</div>
+  <h2>🎓 <span class="accent">Diploma</span></h2>
+  <div id="dip-trancado"><span class="g">🔒</span><p>Complete as 8 peças do seu quebra-cabeça para desbloquear seu Diploma de Integridade.</p></div>
+  <div id="dip-livre">
+    <div class="dip-box">
+      <h3>DIPLOMA DE INTEGRIDADE</h3>
+      <p style="font-size:13px;color:#666">Certificamos que</p>
+      <div class="nm" id="certNome"></div>
+      <p class="msg">Completou sua jornada de reconexão. Cada parte sua foi recuperada. Você está inteira(o).</p>
+      <div class="lista" id="certLista"></div>
+      <div class="data" id="certData"></div>
+      <span class="selo">⟳</span>
+    </div>
+    <button class="btn btn2" style="margin-top:16px" onclick="window.print()">🖨️ Salvar Diploma</button>
+  </div>
+</div>
+
+<div class="tela" id="config">
+  <div class="volta" onclick="irTela('home')">← Voltar</div>
+  <h2>⚙️ <span class="accent">Config</span></h2>
+  <div class="card" style="margin-top:16px">
+    <div class="gg"><label>Seu nome</label><input id="cfgNome" onchange="altNome(this.value)" placeholder="Seu nome"></div>
+  </div>
+  <div class="card">
+    <h4 style="margin-bottom:6px;font-size:15px">Sobre</h4>
+    <p class="dim" style="font-size:13px;line-height:1.6">Volta é uma ferramenta de auxílio emocional para reconexão com a própria identidade.</p>
+  </div>
+  <div class="perigo"><button class="btn btn-red" onclick="resetar()">Apagar dados e recomeçar</button></div>
+</div>
+
+<nav id="nav">
+  <a onclick="navClick(this,'home')"><span class="ico">🏠</span>Início</a>
+  <a onclick="navClick(this,'espelho')"><span class="ico">🪞</span>Espelho</a>
+  <a onclick="navClick(this,'inventario')"><span class="ico">📦</span>Inventário</a>
+  <a onclick="navClick(this,'jornada')"><span class="ico">🗺️</span>Jornada</a>
+  <a onclick="navClick(this,'diploma')"><span class="ico">🎓</span>Diploma</a>
+</nav>
+</div>
+
+<script>
+var PECAS = [
+  {id:1,nome:"Acalento",ico:"🤗",dica:"Use o Espelho"},
+  {id:2,nome:"Escuta",ico:"👂",dica:"Espelho ou Ressignificar"},
+  {id:3,nome:"Raízes",ico:"🌿",dica:"Espelho ou Ancorar"},
+  {id:4,nome:"Chama",ico:"🔥",dica:"Use o Espelho"},
+  {id:5,nome:"Direção",ico:"🧭",dica:"Espelho ou Protagonismo"},
+  {id:6,nome:"Leveza",ico:"🦋",dica:"Espelho ou Florescer"},
+  {id:7,nome:"Confiança",ico:"💪",dica:"Use o Espelho"},
+  {id:8,nome:"Plenitude",ico:"✨",dica:"Complete as 7 anteriores"}
+];
+
+var ESPELHO = [
+  {e:"👤",t:"Da companhia, da rotina juntos",freq:10,
+   r:'"Você não sente falta da companhia dele(a). Sente falta de não estar sozinha(o). O silêncio que hoje dói é o espaço onde você vai se reencontrar."',
+   f:"Você dividia o dia a dia, as refeições, o silêncio com alguém.",
+   n:"Segurança de não estar sozinha(o). Ter uma rotina que fazia sentido.",
+   rec:"Sua capacidade de construir um lar e criar rotina é SUA. Você pode recomeçar onde quiser."},
+  {e:"💬",t:"Do meu melhor amigo(a)",freq:8,
+   r:'"Você não sente falta do(a) seu(sua) melhor amigo(a). Sente falta da lealdade que VOCÊ dedicava."',
+   f:"Havia alguém para quem você contava tudo.",
+   n:"Ser ouvida(o), acolhida(o), validada(o) em quem você é.",
+   rec:"Sua profundidade e sua capacidade de amar são talentos SEUS."},
+  {e:"🤗",t:"Do toque, do abraço, do colo",freq:7,
+   r:'"Você não sente falta do toque dele(a). Sente falta de se sentir segura(o). O acolhimento que você procura já existe dentro de você."',
+   f:"O contato físico que trazia conforto e pertencimento.",
+   n:"Aconchego, regulação emocional, sentir-se protegida(o).",
+   rec:"Seu corpo é seu templo. Você pode se dar o carinho que merece."},
+  {e:"🗣️",t:"Das conversas profundas",freq:6,
+   r:'"Você não sente falta das conversas. Sente falta de ser estimulada(o). Sua mente é brilhante."',
+   f:"Trocas que duravam horas, sobre tudo e sobre nada.",
+   n:"Conexão intelectual, sentir-se compreendida(o) na essência.",
+   rec:"Sua inteligência e curiosidade são motor interno."},
+  {e:"❤️",t:"De ser especial, prioridade",freq:5,
+   r:'"Você não sente falta de ser prioridade dele(a). Sente falta de se sentir vista(o). O primeiro olhar que precisa te enxergar é o seu."',
+   f:"Saber que alguém te colocava em primeiro lugar.",
+   n:"Validação externa, reconhecimento, sentir-se importante.",
+   rec:"Seu valor não é dado por ninguém. Você é protagonista da sua história."},
+  {e:"🛡️",t:"Da segurança, proteção",freq:4,
+   r:'"Você não sente falta da proteção dele(a). Sente falta de descansar. A força que você busca fora sempre esteve dentro."',
+   f:"A certeza de que alguém cuidaria de tudo.",
+   n:"Alívio, descanso, saber que não precisa dar conta de tudo sozinha(o).",
+   rec:"Sua resiliência te trouxe até aqui. Você pode ser seu próprio porto."}
+];
+
+var JORNADAS = {
+  1:{ico:"📖",tit:"RESSIGNIFICAR",txt:"O passado é uma história que contamos a nós mesmos.",perg:["O que essa experiência te ensinou sobre seus limites?","Qual parte de você ficou esquecida?","Se você fosse escrever o próximo capítulo hoje, como começaria?"],peca:2},
+  2:{ico:"🧭",tit:"PROTAGONISMO",txt:"Ser protagonista é assumir o volante da própria vida.",perg:["Em que áreas você se colocou em segundo plano?","Qual decisão tomaria hoje se não tivesse medo?","O que te faz sentir dona(o) de si?"],peca:5},
+  3:{ico:"🌱",tit:"FLORESCER",txt:"Crescer dói, mas ficar apertada(o) em um vaso que não te cabe mais dói mais ainda.",perg:["Quais desejos você engavetou?","Para onde você quer ir?","O que você quer redescobrir?"],peca:6},
+  4:{ico:"⚓",tit:"ANCORAR",txt:"Ancorar é encontrar estabilidade no meio da tempestade.",perg:["Pelo que você é grata(o) hoje?","Qual é seu lugar seguro dentro de si?","O que te mantém firme?"],peca:3}
+};
+
+var estado = {nome:"",pecas:[],inventario:[],jornadaConcluida:[]};
+
+function arrumarEstado(){
+  var unicos = [];
+  var vistos = {};
+  for(var i=0;i<estado.pecas.length;i++){
+    var pid = estado.pecas[i];
+    if(pid>=1 && pid<=8 && !vistos[pid]){
+      unicos.push(pid);
+      vistos[pid]=true;
+    }
+  }
+  estado.pecas = unicos;
+}
+
+function iniciar(){
+  var salvo = localStorage.getItem("volta");
+  if(salvo){try{estado=JSON.parse(salvo);arrumarEstado();document.getElementById("ob").style.display="none";document.getElementById("nav").style.display="flex"}catch(e){localStorage.removeItem("volta")}}
+  montarEspelho();renderizar();
+}
+window.onload=iniciar;
+
+function salvar(){arrumarEstado();localStorage.setItem("volta",JSON.stringify(estado));renderizar()}
+
+function irOb(n){document.querySelectorAll(".passo").forEach(function(p){p.classList.remove("ativo")});document.getElementById("p"+n).classList.add("ativo")}
+function finalizarOb(){var n=document.getElementById("nomeUser").value.trim();if(!n){alert("Digite seu nome.");return}estado.nome=n;document.getElementById("ob").style.display="none";document.getElementById("nav").style.display="flex";salvar()}
+
+function irTela(id){
+  document.querySelectorAll(".tela").forEach(function(t){t.classList.remove("ativa")});document.getElementById(id).classList.add("ativa");
+  document.querySelectorAll("nav a").forEach(function(a){a.classList.remove("on")});
+  var mapa={home:0,espelho:1,inventario:2,jornada:3,diploma:4};var links=document.querySelectorAll("nav a");if(links[mapa[id]])links[mapa[id]].classList.add("on");
+  if(id=="diploma")verDiploma();if(id=="config")document.getElementById("cfgNome").value=estado.nome;
+}
+function navClick(el,id){irTela(id);document.querySelectorAll("nav a").forEach(function(a){a.classList.remove("on")});el.classList.add("on")}
+
+function renderizar(){
+  var qtd=estado.pecas.length;
+  document.getElementById("contPecas").textContent=qtd;
+  document.getElementById("barraProg").style.width=(qtd/8*100)+"%";
+  var niv = document.getElementById("nivel");
+  if(qtd<3)niv.textContent="🌱 Nível 1 · Semente";
+  else if(qtd<6)niv.textContent="🌿 Nível 2 · Broto";
+  else niv.textContent="✨ Nível 3 · Plenitude";
+  
+  var grade=document.getElementById("gradePz");grade.innerHTML="";
+  for(var i=0;i<PECAS.length;i++){var p=PECAS[i];var livre=estado.pecas.indexOf(p.id)>-1;var div=document.createElement("div");div.className="pz"+(livre?" livre":"");div.innerHTML='<span class="nro">'+(i+1)+'</span><span class="ico">'+(livre?p.ico:"❓")+'</span><span>'+(livre?p.nome:"???")+"</span>"+(livre?"":'<span class="dica">'+p.dica+"</span>");grade.appendChild(div)}
+  var inv=document.getElementById("listaInv");inv.innerHTML="";
+  if(estado.inventario.length==0){inv.innerHTML='<div class="vazio"><span class="ico">📭</span>Nenhuma peça ainda.</div>';return}
+  for(var i=0;i<estado.inventario.length;i++){var item=estado.inventario[i];var div=document.createElement("div");div.className="item-inv";div.innerHTML='<div class="st">✅</div><div class="inf"><span class="nm">'+item.n+'</span><span class="tg">Peça '+item.p+' — '+item.pn+'</span></div><span class="dt">'+item.d+"</span>";inv.appendChild(div)}
+}
+
+function montarEspelho(){
+  var lista=document.getElementById("listaSc");lista.innerHTML="";
+  for(var i=0;i<ESPELHO.length;i++){var e=ESPELHO[i];var barras="";for(var j=0;j<e.freq;j++)barras+='<span class="cheia"></span>';for(var j=e.freq;j<10;j++)barras+="<span></span>";var div=document.createElement("div");div.className="sc-card";div.setAttribute("onclick","selEspelho("+i+")");div.innerHTML='<span class="e">'+e.e+'</span><span class="t">'+e.t+'</span><div class="barra-freq">'+barras+"</div>";lista.appendChild(div)}
+}
+var idxEspelho=-1;
+function selEspelho(i){idxEspelho=i;var e=ESPELHO[i];document.getElementById("listaSc").style.display="none";document.getElementById("res-frame").style.display="block";document.getElementById("rTexto").textContent=e.r;document.getElementById("rFato").textContent=e.f;document.getElementById("rNec").textContent=e.n;document.getElementById("rRec").textContent=e.rec}
+
+function recuperar(){
+  if(idxEspelho<0)return;
+  arrumarEstado();
+  var prox = null;
+  for(var i=1;i<=8;i++){if(estado.pecas.indexOf(i)===-1){prox=i;break}}
+  if(prox===null){alert("Você já completou todas as 8 peças! Veja seu Diploma.")}else{
+    var p=null;for(var i=0;i<PECAS.length;i++){if(PECAS[i].id===prox){p=PECAS[i];break}}
+    if(p){estado.pecas.push(prox);estado.inventario.push({n:ESPELHO[idxEspelho].t,p:prox,pn:p.nome,d:hoje()});salvar()}
+  }
+  document.getElementById("res-frame").style.display="none";document.getElementById("listaSc").style.display="block"
+}
+
+function abrirJ(id){
+  var j=JORNADAS[id];var feito=estado.jornadaConcluida.indexOf(id)>-1;var c=document.getElementById("jConteudo");
+  var html='<span style="font-size:50px;display:block;margin-bottom:16px">'+j.ico+"</span>";
+  html+='<h2 style="margin-bottom:8px">'+j.tit+"</h2>";
+  html+='<p style="margin-bottom:20px;line-height:1.6">'+j.txt+"</p>";
+  html+='<div class="card" style="background:#121225"><h4 style="color:#E85D3A;margin-bottom:12px">Reflexão:</h4><ul style="text-align:left;font-size:14px;padding-left:16px">';
+  for(var i=0;i<j.perg.length;i++)html+='<li style="margin-bottom:8px;line-height:1.5">'+j.perg[i]+"</li>";html+="</ul></div>";
+  var pn="Plenitude";for(var i=0;i<PECAS.length;i++){if(PECAS[i].id==j.peca){pn=PECAS[i].nome;break}}
+  html+='<p style="font-size:11px;color:#888;margin:10px 0">Ao concluir, libera a peça <strong>'+pn+"</strong>.</p>";
+  if(feito)html+='<div class="card" style="text-align:center;margin-top:12px;border:1px solid #4CAF50"><span style="color:#4CAF50;font-size:16px">Concluído</span></div>';
+  else html+='<button class="btn" style="margin-top:12px" onclick="concJ('+id+","+j.peca+')">Concluí esta etapa</button>';
+  c.innerHTML=html;document.getElementById("modal-j").style.display="flex";
+}
+function fecharJ(){document.getElementById("modal-j").style.display="none"}
+function concJ(id,peca){
+  if(estado.jornadaConcluida.indexOf(id)===-1)estado.jornadaConcluida.push(id);
+  arrumarEstado();
+  if(estado.pecas.indexOf(peca)===-1){
+    var p=null;for(var i=0;i<PECAS.length;i++){if(PECAS[i].id===peca){p=PECAS[i];break}}
+    if(p)estado.inventario.push({n:"Módulo: "+JORNADAS[id].tit,p:peca,pn:p.nome,d:hoje()});
+    estado.pecas.push(peca);
+  }
+  salvar();fecharJ();
+}
+function verDiploma(){
+  arrumarEstado();
+  if(estado.pecas.length>=8){document.getElementById("dip-trancado").style.display="none";document.getElementById("dip-livre").style.display="block";document.getElementById("certNome").textContent=estado.nome;var lista=document.getElementById("certLista");lista.innerHTML="";for(var i=0;i<PECAS.length;i++){var div=document.createElement("div");div.textContent=PECAS[i].ico+" "+PECAS[i].nome;lista.appendChild(div)}document.getElementById("certData").textContent="Concluído em "+hoje()}
+  else{document.getElementById("dip-trancado").style.display="block";document.getElementById("dip-livre").style.display="none"}
+}
+function altNome(v){estado.nome=v;salvar()}
+function resetar(){if(confirm("Tem certeza?"))if(confirm("É irreversível. Recomeçar?")){localStorage.removeItem("volta");location.reload()}}
+function hoje(){var d=new Date();return d.getDate()+"/"+(d.getMonth()+1)+"/"+d.getFullYear()}
+</script>
+</body>
+</html>
